@@ -51,6 +51,7 @@
     background-color: rgb(248, 248, 248);
     border: 1px solid rgb(248, 248, 248);
     text-align: start;
+    width: 360px;
   }
   .product_card img {
     max-width: 359px;
@@ -94,4 +95,21 @@
   .product_card:hover {
     border: 1px solid rgb(255, 106, 106);
     box-shadow: 10px 5px 5px rgb(163, 163, 163);
+  }
+
+  .cart {
+    display: grid;
+    grid-template-columns: repeat(3, 210px);
+    -moz-column-gap: 30px;
+         column-gap: 30px;
+    row-gap: 30px;
+    margin-bottom: 20px;
+  }
+
+  .cart .product_card img {
+    width: 200px;
+  }
+
+  .cart .product_card {
+    width: 200px;
   }
