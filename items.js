@@ -1,97 +1,76 @@
+let data;
+
 async function productData () {
-    try
-    {
-        const response = await fetch("data.json");
-        if (!response.ok) {
-            throw new Error('Мы не можем считать данные!');
-        }
-        const data = await response.json();
-        // console.log(data);
-
-        const container = document.querySelector('.products_cards');
-        data.forEach(({img, name, desc, price}) => {
-            const productCard = 
-            `
-                    <div class="product_card">
-                        <img src="${img}" class="product-image" alt="product1">
-                        <a href="./product.html"><h3>${name}</h3></a>
-                        <div class="card_description">
-                            <p class="description">${desc}</p>
-                        </div>
-                        <p class="price">${price}</p>
-                        
-                    </div>
-                    
-            `
-            container.insertAdjacentHTML("beforeend", productCard);
-            const AddToCartBtn = document.createElement("button");
-            AddToCartBtn.classList.add("add_to_cart");
-            container.insertAdjacentHTML("beforeend", AddToCartBtn);
-
-            AddToCartBtn.addEventListener("click", function(event) {
-              addProductToCart(event, {name, price,img});
-            });
-
-        })}
-        catch (error) {
-        console.error(error);
+  try
+  {
+    const response = await fetch("data.json");
+    if (!response.ok) {
+      throw new Error('Мы не можем считать данные!');
     }
+    data = await response.json();
+    console.log(data);
+
+    const container = document.querySelector('.products_cards');
+    for (const [id] of Object.keys(data)) {
+      const productCard = 
+      `
+        <div class="product_card">
+          <img src="${data[id].img}" class="product-image" alt="product1">
+          <a href="./product.html"><h3>${data[id].name}</h3></a>
+          <div class="card_description">
+            <p class="description">${data[id].desc}</p>
+          </div>
+          <p class="price">${data[id].price}</p>
+          <p>${id}</p>
+        </div>       
+      `
+      container.insertAdjacentHTML("beforeend", productCard);
+
+      const button = document.createElement("button");
+      button.textContent = "Добавить в корзину";
+      button.addEventListener("click", function () {
+        addProductToCart(id);
+      })
+      container.lastElementChild.appendChild(button);
+      
+      
+    };
+        
+  }
+  catch (error) {
+    console.error(error);
+  }
+
 }
+
 
 productData();
 
-
-function addProductToCart(product) {
-  // Получаем данные о товаре
-  const name = product.name;
-  const price = product.price;
-  const img = product.img;
-
-  // Добавляем товар в корзину
+function addProductToCart(productId) {
+  
+  // Получить корзину.
   const cart = document.querySelector(".cart");
-  const productItem = `
-    <div class="product_item">
-      <img src="${img}" class="product-image" alt="product1">
-      <h3>${name}</h3>
-      <p class="price">${price}</p>
-      <button class="remove_from_cart">Удалить</button>
+  
+  const card =
+  `
+    <div class="product_card">
+        <img src="${data[productId].img}" class="product-image" alt="product1">
+        <a href="./product.html"><h3>${data[productId].name}</h3></a>
+        <p class="price">${data[productId].price}</p>
+        <p>${productId}</p>
     </div>
   `;
-  // cart.insertAdjacentHTML("beforeend", productItem);
-  cart.appendChild(productItem);
+  // Добавить карточку товара в корзину.
+  cart.insertAdjacentHTML("beforeend", card);
+
+  const button = document.createElement("button");
+      button.textContent = "Удалить";
+      button.addEventListener("click", function () {
+        // removeProductFromCart(productId);
+        button.parentElement.remove();
+      })
+      cart.lastElementChild.appendChild(button);
 }
-
-// Добавляем событие click к кнопке "Добавить в корзину"
-document.querySelectorAll(".product_card").forEach((card) => {
-  card.querySelector(".add_to_cart").addEventListener("click", () => {
-    const product = {
-      name: card.querySelector(".product_name").textContent,
-      price: card.querySelector(".product_price").textContent,
-      img: card.querySelector(".product_image").src,
-    };
-    addProductToCart(product);
-  });
-});
-
-function removeProductFromCart(product) {
-  // Получаем элемент с классом ".product_item"
-  const productItem = document.querySelector(`.product_item[data-product-id="${product.id}"]`);
-
-  // Удаляем элемент из корзины
-  productItem.remove();
-}
-
-// Добавляем событие click к кнопке "Удалить"
-document.querySelectorAll(".cart").forEach((cart) => {
-  cart.querySelectorAll(".remove_from_cart").forEach((button) => {
-    button.addEventListener("click", () => {
-      const product = {
-        id: button.dataset.productId,
-      };
-      removeProductFromCart(product);
-    });
-  });
-});
 
 if (cart.children.length === 0) {
   cart.style.display = "none";
